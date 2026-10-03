@@ -1,0 +1,30 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3-products
+      author: store
+      changes:
+        - sql:
+            sql: |
+              CREATE TABLE product (
+                  id BIGSERIAL PRIMARY KEY,
+                  description VARCHAR(255) NOT NULL
+              );
+
+              CREATE TABLE order_product (
+                  order_id BIGINT NOT NULL REFERENCES "order" (id),
+                  product_id BIGINT NOT NULL REFERENCES product (id),
+                  PRIMARY KEY (order_id, product_id)
+              );
+
+              CREATE INDEX idx_order_product_product_id ON order_product (product_id);
+              CREATE INDEX IF NOT EXISTS idx_order_customer_id ON "order" (customer_id);
+
+  - changeSet:
+      id: 3-reset-sequences
+      author: store
+      comment: data.sql inserts explicit ids, so move the sequences past them or the next POST gets a duplicate key
+      changes:
+        - sql:
+            sql: |
+              SELECT setval(pg_get_serial_sequence('customer', 'id'), COALESCE((SELECT MAX(id) FROM customer), 0) + 1, false);
+              SELECT setval(pg_get_serial_sequence('"order"', 'id'), COALESCE((SELECT MAX(id) FROM "order"), 0) + 1, false);

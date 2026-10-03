@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5433/store
+    username: admin
+    password: admin
+    hikari:
+      minimum-idle: 10
+      maximum-pool-size: 10
+      max-lifetime: 1800000
+      keepalive-time: 300000
+      auto-commit: false
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+        default_batch_fetch_size: 100
+        connection:
+          provider_disables_autocommit: true
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
